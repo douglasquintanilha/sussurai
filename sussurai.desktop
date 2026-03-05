@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Sussurai
+Comment=Voice to Text — Hold key to speak, release to paste
+Exec=sussurai
+Icon=sussurai
+Terminal=false
+Type=Application
+Categories=Utility;Accessibility;
+Keywords=voice;speech;dictation;whisper;transcription;
+StartupNotify=false
