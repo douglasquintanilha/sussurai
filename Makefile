@@ -65,8 +65,10 @@ install: sussurai
 	cp icons/sussurai.png $(ICON_DIR)/sussurai.png
 	cp sussurai.desktop $(APP_DIR)/sussurai.desktop
 	cp sussurai.desktop $(AUTOSTART_DIR)/sussurai.desktop
-	@if [ -f .env ]; then \
-		mkdir -p $(HOME)/.config/sussurai; \
+	@mkdir -p $(HOME)/.config/sussurai
+	@if [ -f $(HOME)/.config/sussurai/.env ]; then \
+		echo ">>> Keeping existing ~/.config/sussurai/.env"; \
+	elif [ -f .env ]; then \
 		cp .env $(HOME)/.config/sussurai/.env; \
 		echo ">>> Copied .env to ~/.config/sussurai/"; \
 	fi

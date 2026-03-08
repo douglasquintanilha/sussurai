@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/BurntSushi/toml"
 	"github.com/joho/godotenv"
@@ -25,13 +26,15 @@ type LocalConfig struct {
 }
 
 type OpenAIConfig struct {
-	APIKey   string `toml:"api_key"`
-	Language string `toml:"language"`
+	APIKey    string `toml:"api_key"`
+	Language  string `toml:"language"`
+	Translate bool   `toml:"translate"`
 }
 
 type GroqConfig struct {
-	APIKey   string `toml:"api_key"`
-	Language string `toml:"language"`
+	APIKey    string `toml:"api_key"`
+	Language  string `toml:"language"`
+	Translate bool   `toml:"translate"`
 }
 
 func DefaultConfig() Config {
@@ -44,6 +47,9 @@ func DefaultConfig() Config {
 			Language:  "auto",
 		},
 		OpenAI: OpenAIConfig{
+			Language: "auto",
+		},
+		Groq: GroqConfig{
 			Language: "auto",
 		},
 	}
@@ -97,6 +103,46 @@ func LoadConfig() (Config, error) {
 	}
 
 	return cfg, nil
+}
+
+func LoadVocabulary() string {
+	dir, err := configDir()
+	if err != nil {
+		return ""
+	}
+	data, err := os.ReadFile(filepath.Join(dir, "vocabulary.txt"))
+	if err != nil {
+		return ""
+	}
+	// Join lines with ", " to form a prompt string
+	lines := strings.Split(strings.TrimSpace(string(data)), "\n")
+	var words []string
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if line != "" && !strings.HasPrefix(line, "#") {
+			words = append(words, line)
+		}
+	}
+	return strings.Join(words, ", ")
+}
+
+// SaveConfig writes the config to config.toml, omitting API keys.
+func SaveConfig(cfg Config) error {
+	dir, err := configDir()
+	if err != nil {
+		return err
+	}
+	// Never write API keys to config file — they belong in .env
+	cfg.OpenAI.APIKey = ""
+	cfg.Groq.APIKey = ""
+
+	path := filepath.Join(dir, "config.toml")
+	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	return toml.NewEncoder(f).Encode(cfg)
 }
 
 func (c *Config) ModelPath() (string, error) {

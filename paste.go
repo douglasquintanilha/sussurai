@@ -86,7 +86,7 @@ func PasteText(text string) error {
 	// Step 2: Simulate Ctrl+V via pre-warmed uinput keyboard
 	if ts != nil {
 		if err := ts.PasteClipboard(); err != nil {
-			fmt.Fprintf(os.Stderr, "[sussurai] uinput paste failed: %v\n", err)
+			fmt.Fprintf(os.Stderr, "[sussur.ai] uinput paste failed: %v\n", err)
 		} else {
 			return nil
 		}

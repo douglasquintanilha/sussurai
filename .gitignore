@@ -2,3 +2,20 @@ sussurai
 third_party/
 *.bin
 .env
+
+# Test/coverage output
+*.test
+*.out
+cover.out
+coverage.html
+
+# IDE/editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

@@ -17,10 +17,7 @@ func TestEncodeWAV(t *testing.T) {
 		samples[i] = float32(math.Sin(2 * math.Pi * 440 * float64(i) / float64(sampleRate)))
 	}
 
-	wav, err := encodeWAV(samples, sampleRate)
-	if err != nil {
-		t.Fatalf("encodeWAV error: %v", err)
-	}
+	wav := encodeWAV(samples, sampleRate)
 
 	// Check RIFF header
 	if string(wav[:4]) != "RIFF" {
@@ -74,11 +71,7 @@ func TestEncodeWAV(t *testing.T) {
 }
 
 func TestEncodeWAVEmpty(t *testing.T) {
-	wav, err := encodeWAV([]float32{}, 16000)
-	if err != nil {
-		t.Fatalf("encodeWAV error: %v", err)
-	}
-	// Should still have valid header (44 bytes) with 0 data
+	wav := encodeWAV([]float32{}, 16000)
 	if len(wav) != 44 {
 		t.Errorf("expected 44 bytes for empty WAV, got %d", len(wav))
 	}
@@ -87,10 +80,7 @@ func TestEncodeWAVEmpty(t *testing.T) {
 func TestEncodeWAVClipping(t *testing.T) {
 	// Values outside [-1, 1] should be clamped
 	samples := []float32{-2.0, -1.0, 0.0, 1.0, 2.0}
-	wav, err := encodeWAV(samples, 16000)
-	if err != nil {
-		t.Fatalf("encodeWAV error: %v", err)
-	}
+	wav := encodeWAV(samples, 16000)
 
 	// Read back the PCM samples from the data section
 	dataStart := 44

@@ -1,4 +1,4 @@
-# Sussurai
+# Sussur.ai
 
 Free, open-source push-to-talk voice-to-text for Linux. Hold a key, speak, release — your words are transcribed and pasted into any app.
 

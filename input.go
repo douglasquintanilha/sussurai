@@ -16,6 +16,7 @@ type KeyEventType int
 const (
 	KeyPress   KeyEventType = iota
 	KeyRelease
+	KeyCancel
 )
 
 type KeyEvent struct {
@@ -98,7 +99,7 @@ func ListenKeys(hotkey string, doubleTapMs int, events chan<- KeyEvent, quit <-c
 		}
 	}()
 
-	fmt.Printf("[sussurai] Monitoring %d keyboard device(s) for %s\n", len(keyboards), hotkey)
+	fmt.Printf("[sussur.ai] Monitoring %d keyboard device(s) for %s\n", len(keyboards), hotkey)
 
 	rawEvents := make(chan evdev.InputEvent, 64)
 	for _, kb := range keyboards {
@@ -109,7 +110,7 @@ func ListenKeys(hotkey string, doubleTapMs int, events chan<- KeyEvent, quit <-c
 					return
 				}
 				for _, ev := range evts {
-					if ev.Type == uint16(evdev.EV_KEY) && ev.Code == keyCode {
+					if ev.Type == uint16(evdev.EV_KEY) && (ev.Code == keyCode || ev.Code == evdev.KEY_ESC) {
 						select {
 						case rawEvents <- ev:
 						case <-quit:
@@ -131,13 +132,21 @@ func ListenKeys(hotkey string, doubleTapMs int, events chan<- KeyEvent, quit <-c
 		case <-quit:
 			return nil
 		case ev := <-rawEvents:
+			// ESC cancels recording
+			if ev.Code == evdev.KEY_ESC && ev.Value == 1 && recording {
+				recording = false
+				toggleMode = false
+				events <- KeyEvent{Type: KeyCancel}
+				continue
+			}
+
 			switch ev.Value {
 			case 1: // Key down
 				if !recording {
 					timeSinceRelease := time.Since(lastReleaseTime)
 					if timeSinceRelease < doubleTapDuration && !lastReleaseTime.IsZero() {
 						toggleMode = true
-						fmt.Println("[sussurai] Toggle mode: recording (tap again to stop)")
+						fmt.Println("[sussur.ai] Toggle mode: recording (tap again to stop)")
 					} else {
 						toggleMode = false
 					}

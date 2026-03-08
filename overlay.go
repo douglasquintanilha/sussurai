@@ -1,6 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"sync/atomic"
+)
+
+var overlayGen atomic.Uint64
 
 type OverlayState int
 
@@ -13,20 +18,21 @@ const (
 )
 
 func SetOverlay(state OverlayState, text string) {
+	overlayGen.Add(1)
 	SetTrayState(state)
 	if text == "" {
 		return
 	}
-	prefix := "[sussurai]"
+	prefix := "[sussur.ai]"
 	switch state {
 	case OverlayRecording:
-		prefix = "[sussurai] \033[1;31m●\033[0m"
+		prefix = "[sussur.ai] \033[1;31m●\033[0m"
 	case OverlaySuccess:
-		prefix = "[sussurai] \033[1;32m✓\033[0m"
+		prefix = "[sussur.ai] \033[1;32m✓\033[0m"
 	case OverlayError:
-		prefix = "[sussurai] \033[1;31m✗\033[0m"
+		prefix = "[sussur.ai] \033[1;31m✗\033[0m"
 	case OverlayTranscribing:
-		prefix = "[sussurai] \033[1;33m◌\033[0m"
+		prefix = "[sussur.ai] \033[1;33m◌\033[0m"
 	}
 	fmt.Printf("%s %s\n", prefix, text)
 }
