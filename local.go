@@ -21,6 +21,9 @@ func NewLocalTranscriber(cfg Config) (*LocalTranscriber, error) {
 
 	model, err := whisper.New(modelPath)
 	if err != nil {
+		if _, statErr := os.Stat(modelPath); os.IsNotExist(statErr) {
+			return nil, fmt.Errorf("loading model: %s not found (did you run 'make download-model'?)", modelPath)
+		}
 		return nil, fmt.Errorf("loading model %s: %w", modelPath, err)
 	}
 

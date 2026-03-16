@@ -58,7 +58,7 @@ test: $(WHISPER_LIB)
 	LIBRARY_PATH=$(CURDIR)/$(WHISPER_CPP_DIR)/build/src:$(CURDIR)/$(GGML_LIB_DIR) \
 	go test -v ./...
 
-install: sussurai
+install: sussurai download-model
 	@echo ">>> Installing sussurai..."
 	mkdir -p $(BIN_DIR) $(APP_DIR) $(ICON_DIR) $(AUTOSTART_DIR)
 	cp sussurai $(BIN_DIR)/sussurai

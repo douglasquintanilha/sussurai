@@ -42,6 +42,7 @@ git clone https://github.com/raphaelfp/sussurai.git
 cd sussurai
 make              # Clones whisper.cpp + builds everything
 make install      # Installs to ~/.local/bin, adds to app menu & autostart
+# Sussurai will download the default local model during install (or when you run it for the first time).
 ```
 
 ### Configure
